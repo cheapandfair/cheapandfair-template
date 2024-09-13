@@ -27,3 +27,8 @@ In order to access the data via the Globus Web App, click on the Globus Icon in 
 For downloading data to a Supercomputer, checkout the documentation on how to access the Globus endpoint which is most probably already available, then use that as the destination endpoint in the [Globus web interface](https://app.globus.org/).
 
 ## Datasets
+|           Link           | Dataset | Number of Files | Total Size |
+| ------------------------ | ------- | --------------- | ---------- |
+| [Link](index-cmb.html)   | cmb     | `12`            | 14.2 MiB   |
+| [Link](index-synch.html) | synch   | `12`            | 13.7 MiB   |
+| [Link](index-dust.html)  | dust    | `12`            | 13.8 MiB   |
