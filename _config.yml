@@ -5,6 +5,8 @@ site_title: Cheap&FAIR team
 company_name: Cheap&FAIR team
 github_editme_path: cheapandfair/cheapandfair-demo/blob/main/
 
+nav_enabled: false
+
 show_downloads: false
 header_pages:
   - /#datasets
