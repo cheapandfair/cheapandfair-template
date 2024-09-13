@@ -1,0 +1,25 @@
+# This is your sidebar TOC. The sidebar code loops through sections here and provides the appropriate formatting.
+
+entries:
+- title: Sidebar
+  levels: one
+  folders:
+
+  - title: CMB-S4
+    output: web
+    folderitems:
+    - title: Data Challenge 0
+      url: "dc0.html"
+      output: web
+  - title: Pan-Experiment Galactic Science Group Skies
+    output: web
+    folderitems:
+    - title: CMB-S4
+      url: "panexv1.html"
+      output: web
+  - title: Planck
+    output: web
+    folderitems:
+    - title: Public Release 4
+      url: "planck_pr4.html"
+      output: web

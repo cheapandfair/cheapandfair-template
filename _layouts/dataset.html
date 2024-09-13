@@ -1,0 +1,61 @@
+---
+title: "{{ dataset.title }}"
+author: "{{ dataset.author }}"
+description: "{{ dataset.title }}"
+date_created: "{{ dataset.date }}"
+seo:
+  type: Dataset
+---
+
+<p><a href="{{ dataset.release_url }}">Back to release</a></p>
+<h1 id="{{ dataset.id }}">Dataset: {{ dataset.tile }}</h1>
+<ul>
+  {% for metadata in dataset.metadata %}
+  <li>{{ metadata[0] }}: {{ metadata[1] }}</li>
+  {% endfor %}
+</ul>
+<p>See <a href="{{ dataset.release_url }}#data-access">data access</a> on the data release page.</p>
+<p>Access the data through the Globus web interface: <a href="{{ dataset.globus_url }}"><img
+      src="images/globus-logo.png" alt="Download via Globus" /></a></p>
+<p>Download the file manifest for the exact file sizes and checksums.</p>
+<h2 id="files">Files</h2>
+<ul>
+  <li>Number of files: {{ dataset.n_files }}</li>
+  <li>Total size: {{ dataset.total_size }}</li>
+  <li><a href="{{ dataset.manifest_url }}">JSON format file manifest</a></li>
+</ul>
+
+<table>
+  <thead>
+    <tr>
+      <th>File Name</th>
+      <th>Description</th>
+      <th>Size</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for file in dataset.files %}
+    <tr>
+      <td><a href="{{ file.url }}"><code class="language-plaintext highlighter-rouge">{{ file.filename }}</code></a>
+      </td>
+      <td>{{ file.description }}</td>
+      <td>{{ file.size }}</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<h2 id="dataset-fields">Dataset Fields</h2>
+<ul>
+  <li>Title: {{ dataset.title }}</li>
+  <li>Author: {{ dataset.author }}</li>
+  <li>Date: {{ dataset.date }}</li>
+  <li>Release URL: {{ dataset.release_url }}</li>
+  <li>ID: {{ dataset.id }}</li>
+  <li>Metadata: {{ dataset.metadata }}</li>
+  <li>Globus URL: {{ dataset.globus_url }}</li>
+  <li>Manifest URL: {{ dataset.manifest_url }}</li>
+  <li>Number of Files: {{ dataset.n_files }}</li>
+  <li>Total Size: {{ dataset.total_size }}</li>
+  <li>Files: {{ dataset.files }}</li>
+</ul>

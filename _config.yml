@@ -1,0 +1,67 @@
+title: Cheap&FAIR demo data portal
+description: An example of how to host research data using existing services.
+topnav_title: Cheap&FAIR demo data portal
+site_title: Cheap&FAIR team
+company_name: Cheap&FAIR team
+github_editme_path: cheapandfair/cheapandfair-demo/blob/main/
+
+show_downloads: false
+header_pages:
+  - /#datasets
+
+highlighter: rouge
+feedback_link: https://github.com/cheapandfair/cheapandfair-demo/issues/new
+
+markdown: kramdown
+kramdown:
+ input: GFM
+ auto_ids: true
+ hard_wrap: false
+ syntax_highlighter: rouge
+
+# filter used to process markdown. note that kramdown differs from github-flavored markdown in some subtle ways
+
+collections:
+  tooltips:
+    output: false
+# collections are declared here. this renders the content in _tooltips and processes it, but doesn't output it as actual files in the output unless you change output to true
+
+defaults:
+  -
+    scope:
+      path: ""
+      type: "pages"
+    values:
+      layout: "page"
+      comments: false
+      # if you don't want to use Commento.io and just hide comments, change true to false wherever you see the comments property
+      search: true
+      sidebar: home_sidebar
+      topnav: topnav
+  -
+    scope:
+      path: ""
+      type: "tooltips"
+    values:
+      layout: "page"
+      search: true
+      tooltip: true
+
+  -
+    scope:
+      path: ""
+      type: "posts"
+    values:
+      layout: "post"
+      comments: false
+      # if you don't want to use Commento.io and just hide comments, change true to false wherever you see the comments property
+      search: true
+      sidebar: home_sidebar
+      topnav: topnav
+
+# these are defaults used for the frontmatter for these file types
+
+sidebars:
+- home_sidebar
+
+github: [metadata]
