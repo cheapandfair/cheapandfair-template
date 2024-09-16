@@ -2,14 +2,18 @@
 
 import json
 from pytablewriter import MarkdownTableWriter
+import toml
 
-ENDPOINT = '18ed636e-0389-44c3-b533-cb3901dfc60f' # UUID
-DOMAIN = 'g-1926f5.c2d0f8.bd7c.data.globus.org'
-FOLDER = 'data'
+endpoint = toml.load("ENDPOINT.sh")
+ENDPOINT = endpoint["UUID"]
+FOLDER = endpoint["FOLDER"]
+DOMAIN = endpoint["DOMAIN"]
+
 # The portal can support multiple data releases, each including datasets
-RELEASE_NAME = 'index'
+RELEASE_NAME = "index"
 
 dsets = ["cmb", "synch", "dust"]
+
 
 # from https://stackoverflow.com/questions/1094841/get-human-readable-version-of-file-size
 def sizeof_fmt(num, suffix="B"):
@@ -19,18 +23,18 @@ def sizeof_fmt(num, suffix="B"):
         num /= 1024.0
     return f"{num:.1f} Yi{suffix}"
 
+
 def get_fileinfo(fname):
     """Parse file metadata from filename"""
-    freq = fname.split(".")[0].split("_")[1].replace("GHz","")
+    freq = fname.split(".")[0].split("_")[1].replace("GHz", "")
     return freq
+
 
 def write_dataset(dset, n_files, data_size, file_table_rows):
     dset_table_header = ["File Name", "Frequency Band (GHz)", "Size"]
     writer = MarkdownTableWriter(
-        headers=dset_table_header,
-        value_matrix=file_table_rows,
-        margin=1
-        )
+        headers=dset_table_header, value_matrix=file_table_rows, margin=1
+    )
 
     dsettext = dset.replace("_", " ")
 
@@ -58,7 +62,7 @@ Download the [file manifest](https://{DOMAIN}/{FOLDER}/{dset}/manifest.json) for
 
 """
 
-    with open(f'{RELEASE_NAME}-{dset}.md', 'w') as f:
+    with open(f"{RELEASE_NAME}-{dset}.md", "w") as f:
         f.write(dset_text)
         f.write(writer.dumps())
 
@@ -70,7 +74,7 @@ for dset in dsets:
     dset_table_data = []
     # load file list
     # with open(f'{RELEASE_NAME}-{dset}.json') as f: # use this for multiple releases
-    with open(f'{dset}.json') as f:
+    with open(f"{dset}.json") as f:
         file_data = json.load(f)
         file_list = file_data["DATA"]
         # loop over files, build file table info for dataset
@@ -79,23 +83,21 @@ for dset in dsets:
         total_bytes = 0
         n_files = len(file_list) - 1
         for file_entry in file_list:
-            fname = file_entry['name']
-            if not fname == 'manifest.json':
-                total_bytes += file_entry['size']
-                fsize = sizeof_fmt(file_entry['size'])
+            fname = file_entry["name"]
+            if not fname == "manifest.json":
+                total_bytes += file_entry["size"]
+                fsize = sizeof_fmt(file_entry["size"])
                 freq = get_fileinfo(fname)
-                flink = f'[`{fname}`](https://{DOMAIN}/{FOLDER}/{dset}/{fname})'
+                flink = f"[`{fname}`](https://{DOMAIN}/{FOLDER}/{dset}/{fname})"
                 dset_table_data.append([flink, freq, fsize])
         dset_size = sizeof_fmt(total_bytes)
         write_dataset(dset, n_files, dset_size, dset_table_data)
-        dset_url = f'[Link]({RELEASE_NAME}-{dset}.html)'
-        dsets_table_data.append([dset_url, f'{dset}', f'`{n_files}`', dset_size])
+        dset_url = f"[Link]({RELEASE_NAME}-{dset}.html)"
+        dsets_table_data.append([dset_url, f"{dset}", f"`{n_files}`", dset_size])
 
 writer = MarkdownTableWriter(
-    headers=dsets_table_header,
-    value_matrix=dsets_table_data,
-    margin=1
-    )
+    headers=dsets_table_header, value_matrix=dsets_table_data, margin=1
+)
 
-with open(RELEASE_NAME + '.md', 'a') as f:
+with open(RELEASE_NAME + ".md", "a") as f:
     f.write(writer.dumps())
