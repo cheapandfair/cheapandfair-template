@@ -1,4 +1,4 @@
 #!/bin/bash
 dataset=$1
-source ROOT.sh
-globus ls -lrF json $ROOT/$dataset/ > $dataset.json
+source ENDPOINT.sh
+globus ls -lrF json $UUID:/$FOLDER/$dataset/ > $dataset.json
