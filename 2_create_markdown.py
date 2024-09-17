@@ -1,8 +1,21 @@
 #!/usr/bin/env python
 
 import json
+import sys
 from pytablewriter import MarkdownTableWriter
 import toml
+import requests
+
+if len(sys.argv) != 2:
+    print(
+        """Usage: python 0_create_manifest.py <base_folder>
+          
+base_folder shoud be the local path to the folder pointed by the
+FOLDER variable in the ENDPOINT.sh file."""
+    )
+    sys.exit(1)
+else:
+    base_folder = sys.argv[1]
 
 endpoint = toml.load("ENDPOINT.sh")
 ENDPOINT = endpoint["UUID"]
@@ -74,26 +87,29 @@ for dset in dsets:
     dset_table_data = []
     # load file list
     # with open(f'{RELEASE_NAME}-{dset}.json') as f: # use this for multiple releases
-    with open(f"{dset}.json") as f:
+
+    manifest_path = f"{base_folder}/{dset}/manifest.json"
+    with open(manifest_path) as f:
         file_data = json.load(f)
-        file_list = file_data["DATA"]
-        # loop over files, build file table info for dataset
-        # remove manifest from list
-        # total up bytes in dataset
-        total_bytes = 0
-        n_files = len(file_list) - 1
-        for file_entry in file_list:
-            fname = file_entry["name"]
-            if not fname == "manifest.json":
-                total_bytes += file_entry["size"]
-                fsize = sizeof_fmt(file_entry["size"])
-                freq = get_fileinfo(fname)
-                flink = f"[`{fname}`](https://{DOMAIN}/{FOLDER}/{dset}/{fname})"
-                dset_table_data.append([flink, freq, fsize])
-        dset_size = sizeof_fmt(total_bytes)
-        write_dataset(dset, n_files, dset_size, dset_table_data)
-        dset_url = f"[Link]({RELEASE_NAME}-{dset}.html)"
-        dsets_table_data.append([dset_url, f"{dset}", f"`{n_files}`", dset_size])
+    # loop over files, build file table info for dataset
+    # remove manifest from list
+    # total up bytes in dataset
+    total_bytes = 0
+    n_files = len(file_data)
+    # sort file_entry by filename
+    file_data = sorted(file_data, key=lambda x: x["filename"])
+    for file_entry in file_data:
+        file_path = file_entry["filename"]
+        file_name = file_path.split("/")[-1]
+        total_bytes += file_entry["length"]
+        fsize = sizeof_fmt(file_entry["length"])
+        freq = get_fileinfo(file_name)
+        flink = f"[`{file_name}`](https://{DOMAIN}/{file_path})"
+        dset_table_data.append([flink, freq, fsize])
+    dset_size = sizeof_fmt(total_bytes)
+    write_dataset(dset, n_files, dset_size, dset_table_data)
+    dset_url = f"[Link]({RELEASE_NAME}-{dset}.html)"
+    dsets_table_data.append([dset_url, f"{dset}", f"`{n_files}`", dset_size])
 
 writer = MarkdownTableWriter(
     headers=dsets_table_header, value_matrix=dsets_table_data, margin=1
