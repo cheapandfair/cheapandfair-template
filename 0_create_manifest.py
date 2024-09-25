@@ -32,13 +32,13 @@ if len(sys.argv) != 2:
         """Usage: python 0_create_manifest.py <base_folder>
           
 base_folder shoud be the local path to the folder pointed by the
-FOLDER variable in the ENDPOINT.sh file."""
+FOLDER variable in the config.toml file."""
     )
     sys.exit(1)
 else:
     base_folder = sys.argv[1]
 
-endpoint = toml.load("ENDPOINT.sh")
+endpoint = toml.load("config.toml")
 baseurl = endpoint["DOMAIN"] + "/" + endpoint["FOLDER"]
 
 BUFFER = 4 * 1073741824
