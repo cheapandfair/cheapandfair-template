@@ -13,6 +13,7 @@ from globus_sdk.tokenstorage import SimpleJSONFileAdapter
 CLIENT_ID = "1dc53da9-4f45-43b2-b75f-54368fed256c"
 token_file = "~/.cheapandfair.json"
 
+
 def login(dest_srdr_collection=None):
     """Login to Globus or return the tokens if already logged in
 
@@ -61,13 +62,19 @@ def login(dest_srdr_collection=None):
     return transfer_access_token, https_token
 
 
-def copydataset(dataset, dest_srdr_collection=None, dest_folder=None, source_collection=None, base_source_path=None):
+def copydataset(
+    dataset,
+    dest_srdr_collection=None,
+    dest_folder=None,
+    source_collection=None,
+    base_source_path=None,
+):
     """Copy a dataset to a destination collection
 
     Parameters
     ----------
     dataset : str
-        Name of the local folder to copy
+        Name of the remote folder to copy
     dest_srdr_collection : str
         UUID of the destination collection
     dest_folder : str
@@ -88,9 +95,11 @@ def copydataset(dataset, dest_srdr_collection=None, dest_folder=None, source_col
         if source_collection is None:
             source_collection = config["SOURCE_UUID"]
         if base_source_path is None:
-            base_source_path = config["SOURCE_UUID"]
+            base_source_path = config["SOURCE_FOLDER"]
     except KeyError:
-        raise("You need to provide the required configuration either via arguments or in config.toml")
+        raise (
+            "You need to provide the required configuration either via arguments or in config.toml"
+        )
 
     # dataset is "cmb", "synch", or "dust"
     # destination is <collection UUID> <destination folder>
@@ -122,7 +131,9 @@ def copydataset(dataset, dest_srdr_collection=None, dest_folder=None, source_col
     # Create a transfer request to recursively copy the source dataset folder
     # and specifying a SHA256 checksum
     # This does not exactly match -a, for example it cannot preserve permissions or ownership
-    tdata = globus_sdk.TransferData(tc, source_collection, dest_id, preserve_timestamp=True)
+    tdata = globus_sdk.TransferData(
+        tc, source_collection, dest_id, preserve_timestamp=True
+    )
     tdata.add_item(source_path, dest_path, recursive=True, checksum_algorithm="sha256")
     submit_result = tc.submit_transfer(tdata)
     task_id = submit_result["task_id"]
@@ -195,16 +206,14 @@ if __name__ == "__main__":
     # Example copying the synch dataset. The dataset will be copied to /datasets/synch/
     # ./copydataset.py synch 85017645-30ef-4519-abbb-a73811b914b7 /datasets/
 
-    if len(sys.argv) != 4:
+    if len(sys.argv) != 1:
         print("Incorrect number of arguments")
-        print(
-            "Usage: ./copydataset.py <dataset name> <destination collection>:<destination folder>"
-        )
+        print("Usage: ./copydataset.py <dataset name>")
+        sys.exit(1)
 
     # Get the name of the dataset to copy from the public samples
     dataset = sys.argv[1]
     # Get the destination collection and path
 
-    destination_collection = sys.argv[2]
-    destination_folder = sys.argv[3]
-    url, manifest = copydataset(dataset, destination_collection, destination_folder)
+    manifest = copydataset(dataset)
+    print(manifest)
