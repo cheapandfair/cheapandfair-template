@@ -9,7 +9,7 @@ date_created: "2024-09-12"
 
 The data hosting/transfer capability and permissions are provided by [Globus](https://globus.org), the Portal website is a discovery, navigation and documentation tool.
 
-For technical details about the portal, see the [About page](about.md).
+For technical details about the portal, see the [Technology page](tech.md).
 
 ## Data Access 
 
