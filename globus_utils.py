@@ -11,10 +11,7 @@ from globus_sdk.tokenstorage import SimpleJSONFileAdapter
 
 
 CLIENT_ID = "1dc53da9-4f45-43b2-b75f-54368fed256c"
-cheapandfair_collection = "7352d991-b0a0-49a2-830c-e8fe8c968ca2"  # collection "Cheap and FAIR Tutorial Datasets"
 token_file = "~/.cheapandfair.json"
-base_source_path = "/public/datasets/"
-
 
 def login(dest_srdr_collection=None):
     """Login to Globus or return the tokens if already logged in
@@ -64,7 +61,7 @@ def login(dest_srdr_collection=None):
     return transfer_access_token, https_token
 
 
-def copydataset(dataset, dest_srdr_collection=None, dest_folder=None):
+def copydataset(dataset, dest_srdr_collection=None, dest_folder=None, source_collection=None, base_source_path=None):
     """Copy a dataset to a destination collection
 
     Parameters
@@ -74,14 +71,26 @@ def copydataset(dataset, dest_srdr_collection=None, dest_folder=None):
     dest_srdr_collection : str
         UUID of the destination collection
     dest_folder : str
-        Destination folder in the destination collection"""
+        Destination folder in the destination collection
+    source_collection : str
+        UUID of the source collection"""
 
-    if dest_srdr_collection is None or dest_folder is None:
+    try:
         config = toml.load("config.toml")
+    except FileNotFoundError:
+        config = {}
+
+    try:
         if dest_srdr_collection is None:
             dest_srdr_collection = config["UUID"]
         if dest_folder is None:
             dest_folder = config["FOLDER"]
+        if source_collection is None:
+            source_collection = config["SOURCE_UUID"]
+        if base_source_path is None:
+            base_source_path = config["SOURCE_UUID"]
+    except KeyError:
+        raise("You need to provide the required configuration either via arguments or in config.toml")
 
     # dataset is "cmb", "synch", or "dust"
     # destination is <collection UUID> <destination folder>
@@ -108,13 +117,12 @@ def copydataset(dataset, dest_srdr_collection=None, dest_folder=None):
     print(f"The base URL of collection {dest_srdr_collection} is {srdr_base_url}")
     print()
 
-    source_id = cheapandfair_collection
     dest_id = dest_srdr_collection
 
     # Create a transfer request to recursively copy the source dataset folder
     # and specifying a SHA256 checksum
     # This does not exactly match -a, for example it cannot preserve permissions or ownership
-    tdata = globus_sdk.TransferData(tc, source_id, dest_id, preserve_timestamp=True)
+    tdata = globus_sdk.TransferData(tc, source_collection, dest_id, preserve_timestamp=True)
     tdata.add_item(source_path, dest_path, recursive=True, checksum_algorithm="sha256")
     submit_result = tc.submit_transfer(tdata)
     task_id = submit_result["task_id"]
