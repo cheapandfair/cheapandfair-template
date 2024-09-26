@@ -4,23 +4,8 @@ import json
 import sys
 from pytablewriter import MarkdownTableWriter
 import toml
-import requests
 
-if len(sys.argv) != 2:
-    print(
-        """Usage: python 0_create_manifest.py <base_folder>
-          
-base_folder shoud be the local path to the folder pointed by the
-FOLDER variable in the config.toml file."""
-    )
-    sys.exit(1)
-else:
-    base_folder = sys.argv[1]
-
-endpoint = toml.load("config.toml")
-ENDPOINT = endpoint["UUID"]
-FOLDER = endpoint["FOLDER"]
-DOMAIN = endpoint["DOMAIN"]
+config = toml.load("config.toml")
 
 # The portal can support multiple data releases, each including datasets
 RELEASE_NAME = "index"
@@ -39,7 +24,10 @@ def sizeof_fmt(num, suffix="B"):
 
 def get_fileinfo(fname):
     """Parse file metadata from filename"""
-    freq = fname.split(".")[0].split("_")[1].replace("GHz", "")
+    try:
+        freq = fname.split(".")[0].split("_")[1].replace("GHz", "")
+    except IndexError:
+        freq = "0"
     return freq
 
 
@@ -49,13 +37,12 @@ def write_dataset(dset, n_files, data_size, file_table_rows):
         headers=dset_table_header, value_matrix=file_table_rows, margin=1
     )
 
-    dsettext = dset.replace("_", " ")
+    metadata = toml.load("metadata.toml")
+    dset_text = ""
+    for k, v in metadata.items():
+        dset_text += f"{k}: {v.format(dset=dset)}\n"
 
-    dset_text = f"""---
-title: "Dataset: PySM Simulations {dsettext}"
-author: "PySM development team"
-description: "PySM Simulations {dset}"
-date_created: "2024-09-12"
+    dset_text += f"""---
 seo:
   type: Dataset
 ---
@@ -63,15 +50,15 @@ seo:
 [Back to release](./{RELEASE_NAME}.html#datasets)
 See [data access](./{RELEASE_NAME}.html#data-access) on the Data Release page.
 
-Access the data through the Globus web interface: [![Download via Globus](images/globus-logo.png)](https://app.globus.org/file-manager?origin_id={ENDPOINT}&origin_path=%2F{FOLDER}%2F{dset}%2F)
+Access the data through the Globus web interface: [![Download via Globus](images/globus-logo.png)](https://app.globus.org/file-manager?origin_id={config["UUID"]}&origin_path=%2F{config["FOLDER"]}%2F{dset}%2F)
 
-Download the [file manifest](https://{DOMAIN}/{FOLDER}/{dset}/manifest.json) for the exact file sizes and checksums.
+Download the [file manifest](https://{config["DOMAIN"]}/{config["FOLDER"]}/{dset}/manifest.json) for the exact file sizes and checksums.
 
 ## Files
 
 - Number of files: {n_files}
 - Total size: {data_size}
-- [JSON format file manifest](https://{DOMAIN}/{FOLDER}/{dset}/manifest.json)
+- [JSON format file manifest](https://{config["DOMAIN"]}/{config["FOLDER"]}/{dset}/manifest.json)
 
 """
 
@@ -88,7 +75,7 @@ for dset in dsets:
     # load file list
     # with open(f'{RELEASE_NAME}-{dset}.json') as f: # use this for multiple releases
 
-    manifest_path = f"{base_folder}/{dset}/manifest.json"
+    manifest_path = f"{dset}-manifest.json"
     with open(manifest_path) as f:
         file_data = json.load(f)
     # loop over files, build file table info for dataset
@@ -104,7 +91,7 @@ for dset in dsets:
         total_bytes += file_entry["length"]
         fsize = sizeof_fmt(file_entry["length"])
         freq = get_fileinfo(file_name)
-        flink = f"[`{file_name}`](https://{DOMAIN}/{file_path})"
+        flink = f"[`{file_name}`](https://{config['DOMAIN']}/{file_path})"
         dset_table_data.append([flink, freq, fsize])
     dset_size = sizeof_fmt(total_bytes)
     write_dataset(dset, n_files, dset_size, dset_table_data)
