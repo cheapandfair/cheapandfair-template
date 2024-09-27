@@ -62,7 +62,9 @@ Download the [file manifest](https://{config["DOMAIN"]}/{config["FOLDER"]}/{dset
 
 """
 
-    with open(f"{RELEASE_NAME}-{dset}.md", "w") as f:
+    output_path = f"{RELEASE_NAME}-{dset}.md"
+    print(f"Writing dataset markdown to {output_path}")
+    with open(output_path, "w") as f:
         f.write(dset_text)
         f.write(writer.dumps())
 
@@ -71,11 +73,16 @@ dsets_table_header = ["Link", "Dataset", "Number of Files", "Total Size"]
 dsets_table_data = []
 
 for dset in dsets:
+    header = f"Creating markdown for dataset {dset}"
+    print("*" * len(header))
+    print(header)
+    print("*" * len(header))
     dset_table_data = []
     # load file list
     # with open(f'{RELEASE_NAME}-{dset}.json') as f: # use this for multiple releases
 
     manifest_path = f"{dset}-manifest.json"
+    print(f"Reading manifest: {manifest_path}")
     with open(manifest_path) as f:
         file_data = json.load(f)
     # loop over files, build file table info for dataset
@@ -87,6 +94,7 @@ for dset in dsets:
     file_data = sorted(file_data, key=lambda x: x["filename"])
     for file_entry in file_data:
         file_path = file_entry["filename"]
+        print("adding file", file_path)
         file_name = file_path.split("/")[-1]
         total_bytes += file_entry["length"]
         fsize = sizeof_fmt(file_entry["length"])
@@ -101,6 +109,6 @@ for dset in dsets:
 writer = MarkdownTableWriter(
     headers=dsets_table_header, value_matrix=dsets_table_data, margin=1
 )
-
+print("> Appending summary table to", RELEASE_NAME + ".md")
 with open(RELEASE_NAME + ".md", "a") as f:
     f.write(writer.dumps())
