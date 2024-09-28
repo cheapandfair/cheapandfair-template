@@ -49,7 +49,8 @@ date_created: "2024-09-26"
 		  },
 		  options: {
 		      scales: {
-			  yAxis: {
+			  y: {
+			     display: true,
 			      type: 'logarithmic',
 			  }
 		      }
