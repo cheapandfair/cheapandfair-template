@@ -6,7 +6,6 @@ date_created: "2024-09-26"
 ---
 
 
-
 <script src="https://unpkg.com/@globus/sdk/dist/umd/globus.production.js"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
@@ -14,7 +13,7 @@ date_created: "2024-09-26"
 
 This page demonstrates how to plot a CSV file hosted in a Globus Guest Collection with restricted access.
 
-You will need to <a href="https://app.globus.org/groups/XXXXX/join">join the Serverless Data Users Globus Group</a> to view the sample chart.
+You will need to [join a Globus Group](https://app.globus.org/groups/xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx/join) to view the sample chart.
 
 <button id="sign-in" style="display: none">Sign In</button>
 <button id="sign-out"  style="display: none">Sign Out</button>
@@ -29,15 +28,15 @@ You will need to <a href="https://app.globus.org/groups/XXXXX/join">join the Ser
 
 
 <script type="text/javascript">
-
+      /* UPDATE: */
       /* Your Collection UUID */
-      const collection = '85017645-30ef-4519-abbb-a73811b914b7';
-
+      const collection = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
       /* Your new cient ID */
-      const client_id = '1dc53da9-4f45-43b2-b75f-54368fed256c';
-
+      const client_id = 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
       /* The URL of the restricted csv file */
-      const csv_url = 'https://g-053b28.c2d0f8.bd7c.data.globus.org/datasets/cmb_spectra/cls.csv';
+      const redirect_url = 'https://xxxxxxxx.github.io/cheapandfair-template/chart-restricted.html';
+      /* The URL of the restricted csv file */
+      const csv_url = 'https://xxxxxxxx.c2d0f8.bd7c.data.globus.org/datasets/cmb_spectra/cls.csv';
 
       globus.logger.setLogger(console);
       globus.logger.setLogLevel('DEBUG');
@@ -51,7 +50,7 @@ You will need to <a href="https://app.globus.org/groups/XXXXX/join">join the Ser
            * The redirect URL for your application.
            * This URL should also be added to your Globus Application configuration.
            */
-          redirect: 'https://rpwagner.github.io/cheapandfair-template/chart-restricted.html',
+          redirect: redirect_url,
           scopes: `openid profile email https://auth.globus.org/scopes/${collection}/https`,
           /**
            * This will enable the use of refresh tokens - you probably want this!
@@ -140,8 +139,8 @@ You will need to <a href="https://app.globus.org/groups/XXXXX/join">join the Ser
           request.onloadend = function() {
               if(request.status == 403) {
 		console.log('Not authorized for the data, got a 403');
-		UI.USER_INFO.innerText = `${manager.user.name}, you are not authorized to load the data. Did you join the the XXXX Globus Group?`;
-      		UI.CHART.style.display = 'none';
+		UI.USER_INFO.innerText = `${manager.user.name}, you are not authorized to load the data. Did you join the the necessary Globus Group?`;
+      	UI.CHART.style.display = 'none';
 		UI.CANVAS.style.display = 'none';
 	    };
 	  };
