@@ -38,11 +38,11 @@ def write_dataset(dset, n_files, data_size, file_table_rows):
     )
 
     metadata = toml.load("metadata.toml")
-    dset_text = ""
+    dset_text = "---"
     for k, v in metadata.items():
         dset_text += f"{k}: {v.format(dset=dset)}\n"
 
-    dset_text += f"""---
+    dset_text += f"""
 seo:
   type: Dataset
 ---
