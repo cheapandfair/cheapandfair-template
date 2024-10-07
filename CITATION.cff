@@ -1,0 +1,29 @@
+abstract: '<p>In this tutorial we will walk our attendees through the process of starting
+  from data files in a folder, organizing them into a Globus collection and then publish
+  a data catalog website to GitHub pages using the "Serverless Research Data Repository"
+  (SRDR) tools.</p>
+
+  <p>At each stage of the process we will highlight the features required to make
+  a<br>published dataset compliant to the FAIR (Findability, Accessibility,<br>Interoperability,
+  and Reuse) principles.</p>
+
+  <p>The tutorial is targeted both at gateway developers interested in deploying and
+  administering their own data portal and at attendees interested in publishing their
+  data in the most effective way.</p>'
+authors:
+- family-names: Zonca
+  given-names: Andrea
+- family-names: Wagner
+  given-names: Rick
+cff-version: 1.2.0
+date-released: '2024-10-03'
+doi: 10.5281/zenodo.13887292
+keywords:
+- science gateways
+- FAIR
+- Globus
+- GitHub
+- Markdown
+license:
+- cc-by-4.0
+title: 'Cheap and FAIR: Building a Serverless Research Data Repository'
