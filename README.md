@@ -1,10 +1,20 @@
 #  Cheap&FAIR data portal template
 
+Cheap&FAIR has a Template Github repository that can be used to create the basic structure of the Data Portal website.
+
+In this tutorial we will create a new data portal based on the Cheap&FAIR template.
+
+**Requirements:**
+
+* A Github account
+* A Globus account
+* A Globus Guest Collection with writing permissions
+
+In the tutorial we will first configure Github pages to serve the static website, then we will copy a test dataset to your own Globus Collection and then populate the website with metadata and links to the data hosted on Globus.
+
 ## Configure the Github pages repository
 
 The static website will be hosted on Github pages and Github will automatically run Jekyll at each commit to transform the input Markdown pages to HTML files.
-
-Cheap&FAIR has a Template Github repository that can be used to create the basic structure of the Data Portal website.
 
 Login to Github and go to <https://github.com/cheapandfair/cheapandfair-template>
 
@@ -40,6 +50,7 @@ So we simulate for example having data on a local Globus endpoint close to the d
 
 
 First create a `config.toml` file in the root of the repository with the following content:
+Customize the `UUID`, `FOLDER` and `DOMAIN` fields with the values of your Globus Guest Collection from the "Overview" page:
 
 ```toml
 # The following refer to the destination collection, where the data will be copied to and that will serve as backend for the data portal
@@ -52,10 +63,13 @@ SOURCE_FOLDER='/public/datasets/'
 ```
 ## Authenticate with Globus
 
-Login to Globus using the following command. This will open a browser window where you can login to Globus and receive a token to paste back into the notebook.
+Login to Globus using the following command. It can be executed in a Jupyter Notebook or in a IPython terminal.
+
+This will open a browser window where you can login to Globus and receive a token to paste back into the notebook.
 
 
 ```python
+import copy_dataset
 copy_dataset.login();
 ```
 
@@ -73,10 +87,11 @@ Let's look at a couple of the entries in the file manifest.
 
 
 ```python
+import json
 print(json.dumps(cmb_manifest[:2], indent=2))
 ```
 
-Now we can copy the other two datasets. You won't need to login again because the tokens have been cached in `~/.cheapandfair.json`.
+Now we can copy the other two datasets. You won't need to login again because the tokens have been cached in `~/.cheapandfair.json`. In case the token in the file have expired you can just delete the file and run the `login()` function again.
 
 
 ```python
@@ -116,7 +131,6 @@ If you go into a particular folder you can see files in it. Dataset folders can 
 <div>
 <img alt="Screenshot of a Globus Collection file listing" src="./img/caribou-cmb.png" style="width: 50%; height: 50%" />
 </div>
-
 
 
 ## Setting Permissions
@@ -205,18 +219,6 @@ Once the Markdown pages are generated, they are added to the repository and they
 From the perspective of the data portal, there is no difference  between a public and a private dataset, their metadata are published in any case, the difference is that when a user tries to download a private dataset, they are redirected to the Globus login page.
 
 
-```python
-import os
-current_folder = %pwd
-if not current_folder.endswith("cheapandfair-template"):
-    %cd cheapandfair-template
-```
-
-
-```python
-%pwd
-```
-
 The current version of `create_markdown.py` reads metadata about a page from `metadata.json`, it customizes it with the value of the `dset` variable and writes it to a file named `index-{dset}.md`.
 
 
@@ -269,3 +271,12 @@ We can finally add the Markdown files to the repository and push them to GitHub,
 ```python
 !git push
 ```
+
+## Advanced topics
+
+For further customization of the data portal, see the notebooks 4 to 7 of the [Cheap&FAIR Data Portal Tutorial](https://github.com/cheapandfair/cheapandfair-gateways-2024):
+
+* 4. Check the JSON-LD metadata and download datasets in batch using BDBag
+* 5. Add new static pages, images once or programmatically on all datasets
+* 6. Visualize binary files with Pyodide or plot CSV files with `chart.js`
+* 7. Use Globus groups to handle permissions and allow data access/visualization only to specific users
